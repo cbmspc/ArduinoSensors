@@ -65,6 +65,18 @@ if ~exist('cv','var') || isempty(cv)
 end
 
 n = size(X,1);
+d = size(X,2);
+
+if d > 10*n
+    fprintf('mvlsq warning: Your data has %i samples and %i dimensions. Press Ctrl+C to abort.', n, d);
+    pause(5.0);
+    fprintf('\n\n');
+end
+
+if n <= 1
+    error('Cannot work with only 1 sample');
+end
+
 
 if isa(affine,'function_handle')
     if size(Y,1) ~= n && nargout == 1
@@ -120,7 +132,8 @@ catch
     Y_hat = nan(size(Y));
 end
 Resid = Y - Y_hat;
-Covar = Resid'*Resid/size(Y,1);
+%Covar = Resid'*Resid/size(Y,1);
+Covar = cov(Resid);
 if fast || cv || any(isnan(rmse))
     rmse = diag(Covar).';
 end
